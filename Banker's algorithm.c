@@ -1,4 +1,4 @@
-// A Multithreaded Program that implements the banker's algorithm.
+// A Multithreaded Program that implements the Banker's algorithm.
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,7 +19,7 @@ pthread_mutex_t lockResource;
 pthread_cond_t condition;
 
 bool getSafeSeq();
-// process function
+
 void* processCode(void* );
 
 int main(int args, char** argv) {
@@ -52,7 +52,6 @@ int main(int args, char** argv) {
         }
         printf("\n");
 
-	// maximum required resource
         for(int i=0; i<process; i++) {
                 printf("\nMaximum resource required by process %d (R1 R2 ...)? ", i+1);
                 for(int j=0; j<res; j++)
