@@ -8,19 +8,19 @@
 #include <stdbool.h>
 
 int res, process;
-int *resource;
-int *SafeSequence;
 int nProcess = 0;
 int **allocated;
 int **maxRequired;
 int **need;
+int *resource;
+int *SafeSequence;
 
 pthread_mutex_t lockResource;
-pthread_cond_t condition;
+pthread_cond_t c;
 
 bool getSafeSeq();
 
-void* processCode(void* );
+void* CodeOfProcess(void* );
 
 int main(int args, char** argv) {
 	srand(time(NULL));
@@ -93,7 +93,7 @@ int main(int args, char** argv) {
 	for(int i=0; i<process; i++) processNumber[i] = i;
 
         for(int i=0; i<process; i++)
-                pthread_create(&processes[i], &attr, processCode, (void *)(&processNumber[i]));
+                pthread_create(&processes[i], &attr, CodeOfProcess, (void *)(&processNumber[i]));
 
         for(int i=0; i<process; i++)
                 pthread_join(processes[i], NULL);
@@ -155,15 +155,15 @@ bool getSafeSeq() {
 }
 
 // process code
-void* processCode(void *arg) {
+void* CodeOfProcess(void *arg) {
         int p = *((int *) arg);
 
 	// lock resource
         pthread_mutex_lock(&lockResource);
 
-        // condition check
+        // c check
         while(p != SafeSequence[nProcess])
-                pthread_cond_wait(&condition, &lockResource);
+                pthread_cond_wait(&c, &lockResource);
 
 	// process
         printf("\n--> Process %d", p+1);
@@ -201,9 +201,9 @@ void* processCode(void *arg) {
 
         sleep(1);
 
-	// condition broadcast
+	// c broadcast
         nProcess++;
-        pthread_cond_broadcast(&condition);
+        pthread_cond_broadcast(&c);
         pthread_mutex_unlock(&lockResource);
 	pthread_exit(NULL);
 }
